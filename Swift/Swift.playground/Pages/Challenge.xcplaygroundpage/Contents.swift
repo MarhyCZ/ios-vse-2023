@@ -42,9 +42,19 @@ func countPoints(for input: [String]) -> Int {
     for line in input {
         guard let draws = parseRound(for: line) else { continue }
         points += countRound(for: draws)
-        print(countRound(for: draws))
     }
     return points
+}
+
+func parseRound(for line: String) -> [Draw?]? {
+    if (line.isEmpty) { return nil }
+    let round = line.components(separatedBy: .whitespaces)
+    var draws = [Draw?]()
+    
+    for player in round {
+        draws.append(Draw(player))
+    }
+    return draws
 }
 
 
@@ -69,16 +79,6 @@ func countRound(for draws: [Draw?]) -> Int {
     return outcome.rawValue + player.shapeScore()
     
 }
-func parseRound(for line: String) -> [Draw?]? {
-    if (line.isEmpty) { return nil }
-    let round = line.components(separatedBy: .whitespaces)
-    var draws = [Draw?]()
-    
-    for player in round {
-        draws.append(Draw(player))
-    }
-    return draws
-}
 
 enum Draw {
     case rock
@@ -94,12 +94,6 @@ enum Draw {
     }
 }
 
-enum Outcome: Int {
-    case win = 6
-    case draw = 3
-    case lost = 0
-}
-
 extension Draw {
     init?(_ rawValue: String) {
          switch rawValue {
@@ -113,4 +107,10 @@ extension Draw {
                  return nil
          }
      }
+}
+
+enum Outcome: Int {
+    case win = 6
+    case draw = 3
+    case lost = 0
 }
