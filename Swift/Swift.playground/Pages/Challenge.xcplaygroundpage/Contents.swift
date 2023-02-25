@@ -28,11 +28,6 @@
 //: **What would your total score be for the given input if everything goes exactly according to your strategy guide?**
 import Foundation
 
-func countPoints(for input: [String]) -> Int {
-    // TODO: REPLACE WITH YOUR IMPLEMENTATION
-    return 0
-}
-
 let lines = Reader.readLines(from: "input.txt")
 let points = countPoints(for: lines)
 
@@ -40,4 +35,82 @@ if points == 10816 {
     print("🎉 CONGRATULATION 🎉")
 } else {
     print("❌ OOPS, YOU SHOULD DEBUG YOUR SOLUTION ❌")
+}
+
+func countPoints(for input: [String]) -> Int {
+    var points = 0
+    for line in input {
+        guard let draws = parseRound(for: line) else { continue }
+        points += countRound(for: draws)
+        print(countRound(for: draws))
+    }
+    return points
+}
+
+
+func countRound(for draws: [Draw?]) -> Int {
+    guard let opponent = draws[0] else {return 0}
+    guard let player = draws[1] else { return 0}
+
+    if player == opponent {
+        return Outcome.draw.rawValue + player.shapeScore()
+    }
+    
+    var outcome: Outcome
+    switch player {
+        case .rock:
+            outcome = opponent == .scissors ? Outcome.win : Outcome.lost
+        case .paper:
+            outcome = opponent == .rock ? Outcome.win : Outcome.lost
+        case .scissors:
+            outcome = opponent == .paper ? Outcome.win : Outcome.lost
+    }
+    
+    return outcome.rawValue + player.shapeScore()
+    
+}
+func parseRound(for line: String) -> [Draw?]? {
+    if (line.isEmpty) { return nil }
+    let round = line.components(separatedBy: .whitespaces)
+    var draws = [Draw?]()
+    
+    for player in round {
+        draws.append(Draw(player))
+    }
+    return draws
+}
+
+enum Draw {
+    case rock
+    case paper
+    case scissors
+    
+    func shapeScore() -> Int {
+        switch self {
+        case .rock: return 1
+        case .paper: return 2
+        case .scissors: return 3
+        }
+    }
+}
+
+enum Outcome: Int {
+    case win = 6
+    case draw = 3
+    case lost = 0
+}
+
+extension Draw {
+    init?(_ rawValue: String) {
+         switch rawValue {
+            case "A", "X":
+             self = .rock
+         case "B", "Y":
+             self = .paper
+         case "C", "Z":
+             self = .scissors
+             default:
+                 return nil
+         }
+     }
 }
